@@ -1,35 +1,47 @@
 {% set name = "lets-plot" %}
-{% set version = "4.6.2" %}
+{% set version = "4.8.3.dev1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
-
 source:
-  url: https://github.com/JetBrains/lets-plot/archive/v{{ version }}.tar.gz
-  sha256: 7e7fd66570b5e0aa6a6fe8bcb5e5c7aa172a3b6b5b1da474c4420d5f64007b3a
+#  url: https://github.com/JetBrains/lets-plot/archive/v{{ version }}.tar.gz
+#  sha256: 39a19a20415c9f3a87d61bf04b14cc18109f78d3234f41ed9792b2f0ec7e94ae
+  git_url: https://github.com/JetBrains/lets-plot.git
+  git_rev: conda-build
 
 build:
   skip: true  # [win]
   number: 0
   script_env:
    - PROJECT_VERSION=v{{ version }}
+   - IMAGICK_LIB_PATH={{ PREFIX }}
 
 requirements:
   build:
     - {{ stdlib("c") }}
-    - {{ compiler('cxx') }}  # [linux]
-    - openjdk =11
+    - {{ compiler('cxx') }}
+    - openjdk =17
   host:
+    - fonts-conda-forge
+    - fontconfig
+    - freetype
+    - expat
+    - imagemagick=7.1.1_46
     - zlib 
     - python
     - pip
     - setuptools
     - unzip  # [linux]
   run:
-    - python
+    - fontconfig
+    - freetype
+    - fonts-conda-forge
+    - expat
+    - pillow
     - pypng
     - palettable
+    - imagemagick==7.1.1_46
 
 test:
   imports:
@@ -38,6 +50,7 @@ test:
     - pip
   commands:
     - pip check
+    - magick -list font
 
 about:
   home: https://lets-plot.org
